@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page - NaraTube</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>マイページ</h1>
+    <p id="userLabel">読み込み中...</p>
+
+    <div id="uploadArea" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px;">
+        <h3>動画をアップロード</h3>
+        <input type="text" id="vTitle" placeholder="動画のタイトル"><br><br>
+        <input type="file" id="vFile" accept="video/*"><br><br>
+        <button id="upBtn">アップロード開始</button>
+        <p id="upStatus"></p>
+    </div>
+
+    <h3>あなたの動画リスト</h3>
+    <div id="videoList"></div>
+
+    <button id="logoutBtn">ログアウト</button>
+
+    <script type="module" src="mypageScript.js"></script>
+</body>
+</html>
