@@ -25,7 +25,7 @@ document.getElementById("upBtn").addEventListener("click", async () => {
     const status = document.getElementById("upStatus");
 
     if (!file || !title) return alert("タイトルとファイルを選んでください");
-    if (file.size > 50 * 1024 * 1024) return alert("50MB以上のファイルはアップロードできません");
+    //if (file.size > 50 * 1024 * 1024) return alert("50MB以上のファイルはアップロードできません");
 
     status.textContent = "処理中...（これには数分かかる場合があります）";
 
