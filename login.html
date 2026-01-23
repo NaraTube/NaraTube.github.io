@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NaraTube</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div>
+        <h1>login page</h1>
+        <div>
+          <p>※使用できる文字は半角英数字のみです</p>
+          <p>アカウント名:
+            <br>
+          <input type="text" id="accountName">
+          <br>
+          パスワード:
+          <br>
+          <input type="text" id="password">
+          <br>
+          </p>
+          <button id="loginButton" type="submit">進む</button>
+        </div>
+        <button id="homeButton" type="submit">homeに戻る</button>
+    </div>
+    <script type="module" src="loginScript.js"></script>
+    <script type="module" src="firebase.js"></script>
+  </body>
+</html>
