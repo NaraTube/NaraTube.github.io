@@ -1,1 +1,23 @@
-
+.video-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.video-item:hover {
+    background-color: #f5f5f5;
+}
+.video-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin: 0;
+}
+.video-date {
+    font-size: 0.8em;
+    color: #666;
+}
+/* 再生中のアイテムを目立たせる */
+.video-item.active {
+    background-color: #e0f7fa;
+    border-left: 5px solid #00acc1;
+}
