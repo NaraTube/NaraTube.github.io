@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NaraTube</title>
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div style="text-align: center;">
-        <h1>NaraTube▷</h1>
-        <p>ただいま動画の編集に時間を要しています。</p>
-        <p>ログインしても動画がない場合やログインできない場合は大変申し訳ございませんが、数日後にログインを試してください</p>
-        <button id="login" value="login" type="submit">login</button>
+</head>
+<body>
+    <div class="center-container">
+        <h1 class="logo">NaraTube<span>▷</span></h1>
+        <div style="margin: 40px 0;">
+            <p>ただいま動画の編集に時間を要しています。</p>
+            <p style="font-size: 0.9em; color: #666;">
+                動画がない場合やログインできない場合、<br>
+                申し訳ございませんが後日お試しください。
+            </p>
+        </div>
+        <button id="login" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">ログインする</button>
     </div>
     <script type="module" src="script.js"></script>
-  </body>
+</body>
 </html>
