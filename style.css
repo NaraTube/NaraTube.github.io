@@ -1,23 +1,214 @@
-.video-item {
+/* style.css */
+:root {
+    --primary-color: #FF0000; /* YouTube Red */
+    --text-main: #0f0f0f;
+    --text-sub: #606060;
+    --bg-color: #f9f9f9;
+    --white: #ffffff;
+    --border-color: #e5e5e5;
+    --hover-color: #f2f2f2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Roboto", "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* 共通ヘッダー */
+.app-header {
+    background: var(--white);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logo span {
+    color: var(--primary-color);
+}
+
+/* ボタン共通スタイル */
+button, .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #cc0000;
+}
+
+.btn-secondary {
+    background-color: #eee;
+    color: #333;
+}
+.btn-secondary:hover {
+    background-color: #ddd;
+}
+
+/* 入力フォーム共通 */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* 中央寄せコンテナ（ログイン・TOP用） */
+.center-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* --- マイページ用レイアウト --- */
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    gap: 24px;
+    /* デフォルトはPCレイアウト（左動画、右リスト） */
+    grid-template-columns: 1fr 350px; 
+}
+
+/* プレイヤー部分 */
+.player-wrapper {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9; /* 動画の比率を固定 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.player-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.player-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-align: center;
+    width: 100%;
+}
+
+/* 動画リスト部分 */
+.list-container {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    height: fit-content;
+    max-height: 80vh; /* 長すぎる場合はスクロール */
+    overflow-y: auto;
+}
+
+.list-header {
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: bold;
+    background: #f1f1f1;
+}
+
+.video-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
+
 .video-item:hover {
-    background-color: #f5f5f5;
+    background-color: var(--hover-color);
 }
-.video-title {
-    font-weight: bold;
-    font-size: 1.1em;
-    margin: 0;
-}
-.video-date {
-    font-size: 0.8em;
-    color: #666;
-}
-/* 再生中のアイテムを目立たせる */
+
 .video-item.active {
-    background-color: #e0f7fa;
-    border-left: 5px solid #00acc1;
+    background-color: #e6f0ff;
+    border-left: 4px solid var(--primary-color);
+}
+
+.video-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2行で省略 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.video-date {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+
+/* --- レスポンシブ対応（スマホ用） --- */
+@media (max-width: 900px) {
+    .main-container {
+        grid-template-columns: 1fr; /* 1カラムにする */
+        padding: 10px;
+    }
+    
+    .player-wrapper {
+        position: sticky;
+        top: 60px; /* ヘッダーの下に固定 */
+        z-index: 50;
+    }
+
+    .list-container {
+        max-height: none;
+        border: none;
+        background: transparent;
+    }
+    
+    .video-item {
+        background: var(--white);
+        margin-bottom: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
 }
