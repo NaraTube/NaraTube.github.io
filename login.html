@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NaraTube</title>
+    <title>ログイン - NaraTube</title>
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div>
-        <h1>login page</h1>
-        <div>
-          <p>アカウント名:
-            <br>
-          <input type="text" id="accountName">
-          <br>
-          ※パスワードに使用できる文字は半角英数字のみです
-          <br>
-          パスワード:
-          <br>
-          <input type="text" id="password">
-          <br>
-          </p>
-          <button id="loginButton" type="submit">進む</button>
+</head>
+<body>
+    <div class="center-container">
+        <h2 style="margin-bottom: 20px;">ログイン</h2>
+        
+        <div style="text-align: left;">
+            <label for="accountName" style="font-weight: bold;">アカウント名</label>
+            <input type="text" id="accountName" placeholder="ユーザー名を入力">
+            
+            <label for="password" style="font-weight: bold;">パスワード</label>
+            <p style="font-size: 0.8em; color: #666; margin: -5px 0 5px;">※半角英数字のみ</p>
+            <input type="password" id="password" placeholder="パスワードを入力">
         </div>
-        <button id="homeButton" type="submit">homeに戻る</button>
+
+        <button id="loginButton" class="btn btn-primary" style="width: 100%; margin-top: 10px;">進む</button>
+        <button id="homeButton" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">Homeに戻る</button>
     </div>
     <script type="module" src="loginScript.js"></script>
     <script type="module" src="firebase.js"></script>
-  </body>
+</body>
 </html>
