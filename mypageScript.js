@@ -1,163 +1,104 @@
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// ★★★ ここにあなたのGASのURLを貼り付けてください ★★★
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDwPlLRsm9tJlRDRdAvoesBWGBiy8sMYyuqNiX6221RyXLLu-sP1kZuFiK_CZexH_k/exec";
+// Cloudflare WorkerのURL
+const WORKER_BASE_URL = "https://naratube-proto2.s25a5001jt.workers.dev"; // ← 必ず自分のURLか確認！
 
 let currentUser = null;
 
-console.log("Script loaded: mypageScript.js is running"); // 読み込み確認用ログ
-
-// 1. ログイン情報の保持チェック
+// 1. ログイン監視
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         const label = document.getElementById("userLabel");
-        if(label) label.textContent = `ログイン中: ${user.email.split('@')[0]}`;
-        loadVideos();
+        if(label) label.textContent = user.email.split('@')[0];
+        loadVideoList();
     } else {
         location.href = "login.html";
     }
 });
 
-// 2. 動画のアップロード機能 (XHR版・最強版)
-const upBtn = document.getElementById("upBtn");
-if (upBtn) {
-    upBtn.addEventListener("click", async () => {
-        const fileInput = document.getElementById("vFile");
-        const titleInput = document.getElementById("vTitle");
-        const status = document.getElementById("upStatus");
-
-        if (!fileInput || !titleInput) return;
-
-        const file = fileInput.files[0];
-        const title = titleInput.value;
-
-        if (!file || !title) {
-            alert("ファイルとタイトルを入力してください");
-            return;
-        }
-        
-        status.textContent = "準備中... (GASと通信)";
-
-        try {
-            // --- ファイル形式の補完 ---
-            let mimeType = file.type;
-            if (!mimeType && file.name.toUpperCase().endsWith(".MOV")) mimeType = "video/quicktime";
-            if (!mimeType) mimeType = "video/mp4";
-
-            // --- STEP 1: GASへ送信してセッションURLを取得 ---
-            const resGas = await fetch(GAS_URL, {
-                method: "POST",
-                body: JSON.stringify({ fileName: title, mimeType: mimeType })
-            });
-            
-            const gasText = await resGas.text();
-            let gasData;
-            try { gasData = JSON.parse(gasText); } catch (e) { throw new Error("GASエラー: " + gasText); }
-            
-            if (gasData.status === "error") throw new Error(gasData.message);
-            const sessionUrl = gasData.sessionUrl;
-
-            // --- STEP 2: XHRを使ってGoogleドライブへ直接アップロード ---
-            status.textContent = "アップロード開始... 0%";
-
-            await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open("PUT", sessionUrl);
-                
-                // Content-Typeヘッダーをあえて空にする（Googleの自動判定に任せる）
-                // これによりCORSエラーを回避しやすくなります
-                
-                // 進捗（プログレス）表示
-                xhr.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        const percentComplete = Math.round((event.loaded / event.total) * 100);
-                        status.textContent = `アップロード中... ${percentComplete}%`;
-                    }
-                };
-
-                xhr.onload = () => {
-                    if (xhr.status === 200 || xhr.status === 201) {
-                        resolve(JSON.parse(xhr.responseText));
-                    } else {
-                        reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
-                    }
-                };
-
-                xhr.onerror = () => reject(new Error("ネットワークエラー (Failed to fetch)"));
-                
-                xhr.send(file);
-            }).then(async (uploadResult) => {
-                // --- STEP 3: Firebaseに保存 ---
-                status.textContent = "データベースに登録中...";
-                const fileId = uploadResult.id;
-                const videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-
-                await addDoc(collection(db, "videos"), {
-                    uid: currentUser.uid,
-                    title: title,
-                    url: videoUrl,
-                    createdAt: new Date()
-                });
-
-                status.textContent = "完了しました！";
-                alert("動画のアップロードが完了しました！");
-                titleInput.value = "";
-                fileInput.value = "";
-                loadVideos();
-            });
-
-        } catch (e) {
-            console.error(e);
-            status.textContent = "エラー: " + e.message;
-            alert("エラーが発生しました: " + e.message);
-        }
-    });
-}
-
-// 3. 動画の視聴機能
-async function loadVideos() {
+// 2. 動画リスト読み込み
+async function loadVideoList() {
     const listArea = document.getElementById("videoList");
-    if (!listArea) return;
-
-    listArea.innerHTML = "読み込み中...";
     
-    if (!currentUser) return;
-
     try {
-        const q = query(collection(db, "videos"), where("uid", "==", currentUser.uid));
+        const q = query(
+            collection(db, "videos"), 
+            where("uid", "==", currentUser.uid),
+            orderBy("createdAt", "desc")
+        );
+        
         const snap = await getDocs(q);
         
         listArea.innerHTML = "";
         if (snap.empty) {
-            listArea.innerHTML = "<p>動画はまだありません。</p>";
+            listArea.innerHTML = "<p style='padding:20px;'>動画はありません。</p>";
             return;
         }
 
         snap.forEach(doc => {
             const v = doc.data();
-            listArea.innerHTML += `
-                <div style="margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                    <h4>${v.title}</h4>
-                    <iframe src="${v.url}" width="320" height="240" allow="autoplay"></iframe>
-                </div>
+            
+            // ファイルID抽出
+            let fileId = "";
+            const match = v.url.match(/\/d\/(.+?)\//);
+            if (match) fileId = match[1];
+            else return;
+
+            // リストアイテムを作成
+            const div = document.createElement("div");
+            div.className = "video-item";
+            div.innerHTML = `
+                <p class="video-title">▷ ${v.title}</p>
+                <span class="video-date">ID: ${fileId.substring(0, 6)}...</span>
             `;
+
+            // クリック時の動作を設定
+            div.addEventListener("click", () => {
+                playVideo(fileId, v.title, div);
+            });
+
+            listArea.appendChild(div);
         });
+
     } catch (e) {
-        console.error("読み込みエラー:", e);
-        listArea.textContent = "動画の読み込みに失敗しました";
+        console.error("Error:", e);
+        listArea.innerHTML = "<p>リスト読み込みエラー: " + e.message + "</p>";
     }
 }
 
-// ログアウト機能
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-        signOut(auth).then(() => {
-            alert("ログアウトしました");
-            location.href = "login.html";
-        });
-    });
+// 3. 動画再生処理
+function playVideo(fileId, title, clickedElement) {
+    const playerContainer = document.getElementById("playerContainer");
+    const playerMessage = document.getElementById("playerMessage");
+    const videoTag = document.getElementById("mainVideo");
+    
+    // Cloudflare経由のURL
+    const proxyUrl = `${WORKER_BASE_URL}/${fileId}`;
+    console.log("動画URL:", proxyUrl);
+
+    // プレイヤーを表示
+    playerMessage.style.display = "none";
+    playerContainer.style.display = "block";
+
+    // ソースをセットして再生
+    videoTag.src = proxyUrl;
+    videoTag.load(); // 読み込み開始
+    videoTag.play().catch(e => console.log("自動再生ブロック:", e)); // 自動再生試行
+
+    // 選択状態の見た目を更新
+    document.querySelectorAll(".video-item").forEach(el => el.classList.remove("active"));
+    clickedElement.classList.add("active");
+
+    // 上部へスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// 4. ログアウト
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    if (confirm("ログアウトしますか？")) {
+        signOut(auth).then(() => location.href = "login.html");
+    }
+});
