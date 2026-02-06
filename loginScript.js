@@ -26,8 +26,8 @@ loginButton.addEventListener("click", async () => {
   try {
     await signInWithEmailAndPassword(auth, email, password.value);
     alert("ログイン成功！");
-    location.href = "mypage.html"; // 任意
+    location.href = "mypage.html";
   } catch (error) {
-    alert("ログイン失敗\n" + error.message);
+    alert("ログインできませんでした\n" + "アカウント名かパスワード、またはその両方が間違っています");
   }
 });
