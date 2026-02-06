@@ -2,25 +2,34 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Page - NaraTube</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>マイページ</h1>
-    <p id="userLabel">読み込み中...</p>
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
+        <h1>マイページ</h1>
+        <div>
+            ユーザー名：
+            <span id="userLabel" style="font-size: 0.9em; margin-right: 10px;"></span>
+            <button id="logoutBtn" style="padding: 5px 10px;">ログアウト</button>
+        </div>
+    </header>
 
-    <div id="uploadArea" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px;">
-        <h3>動画をアップロード</h3>
-        <input type="text" id="vTitle" placeholder="動画のタイトル"><br><br>
-        <input type="file" id="vFile" accept="video/*"><br><br>
-        <button id="upBtn">アップロード開始</button>
-        <p id="upStatus"></p>
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        
+        <div id="playerContainer" style="background: #000; margin-bottom: 20px; border-radius: 8px; overflow: hidden; display: none;">
+            <video id="mainVideo" controls playsinline width="100%" style="display: block;">
+                </video>
+        </div>
+        <p id="playerMessage" style="text-align: center; color: #666; padding: 20px; background: #eee; border-radius: 8px;">
+            タイトルを選択すると動画が再生されます
+        </p>
+
+        <h3>動画リスト</h3>
+        <div id="videoList" style="border-top: 2px solid #ddd;">
+            </div>
     </div>
-
-    <h3>あなたの動画リスト</h3>
-    <div id="videoList"></div>
-
-    <button id="logoutBtn">ログアウト</button>
 
     <script type="module" src="mypageScript.js"></script>
 </body>
