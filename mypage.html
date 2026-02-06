@@ -7,28 +7,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
-        <h1>マイページ</h1>
-        <div>
-            ユーザー名：
-            <span id="userLabel" style="font-size: 0.9em; margin-right: 10px;"></span>
-            <button id="logoutBtn" style="padding: 5px 10px;">ログアウト</button>
+    <header class="app-header">
+        <div class="logo">NaraTube<span>▷</span></div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span id="userLabel" style="font-size: 0.9em; font-weight: bold;"></span>
+            <button id="logoutBtn" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.8rem;">ログアウト</button>
         </div>
     </header>
 
-    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="main-container">
         
-        <div id="playerContainer" style="background: #000; margin-bottom: 20px; border-radius: 8px; overflow: hidden; display: none;">
-            <video id="mainVideo" controls playsinline width="100%" style="display: block;">
-                </video>
-        </div>
-        <p id="playerMessage" style="text-align: center; color: #666; padding: 20px; background: #eee; border-radius: 8px;">
-            タイトルを選択すると動画が再生されます
-        </p>
-
-        <h3>動画リスト</h3>
-        <div id="videoList" style="border-top: 2px solid #ddd;">
+        <div class="player-section">
+            <div id="playerContainer" class="player-wrapper" style="display: none;">
+                <video id="mainVideo" controls playsinline></video>
             </div>
+            <div id="playerMessage" class="player-wrapper" style="background: #333; display: flex; align-items: center; justify-content: center; color: white;">
+                <p>リストから動画を選択して再生</p>
+            </div>
+        </div>
+
+        <div class="list-section">
+            <div class="list-container">
+                <div class="list-header">次の動画</div>
+                <div id="videoList">
+                    </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module" src="mypageScript.js"></script>
